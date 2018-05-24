@@ -1,0 +1,28 @@
+{
+  "name": "creatures",
+  "version": "1.0.0",
+  "description": "Persistent browser-based monster capture/training game.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devstart": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnashark/creatures.git"
+  },
+  "author": "michael.jolson@gmail.com",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dnashark/creatures/issues"
+  },
+  "homepage": "https://github.com/dnashark/creatures#readme",
+  "dependencies": {
+    "cookie-session": "^2.0.0-beta.3",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
