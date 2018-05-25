@@ -1,9 +1,10 @@
 const pageTemplate = require('../templates/page');
+const routes = require('../routes');
 const error = require('../enums/account-creation-errors');
 
 const basePageContent =
   '<h1>Create a new account.</h1>' +
-  '<form action="/createAccount" method="POST">' +
+  '<form action="' + routes.post.CREATE_ACCOUNT + '" method="POST">' +
     'Username: <input type="text" name="username">' +
     'Password: <input type="password" name="password">' +
     '<input type="submit" value="Create Account">' +

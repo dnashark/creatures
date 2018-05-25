@@ -2,11 +2,8 @@ const cookieSession = require('cookie-session');
 const express = require('express');
 const mongoose = require('mongoose');
 
-const authentication = require('./middleware/authentication');
-const accountCreationController = require('./web/controllers/account-creation');
-const createAccountController = require('./web/controllers/create-account');
-const logInController = require('./web/controllers/log-in');
-const logOutController = require('./web/controllers/log-out');
+const routes = require('./web/routes');
+const registerControllers = require('./web/register-controllers');
 
 const PlayerModel = require('./models/player');
 
@@ -23,15 +20,10 @@ app.use(cookieSession({
 
 app.use(express.urlencoded({extended: false}));
 
-registerController(app, accountCreationController);
-registerController(app, createAccountController);
-registerController(app, logInController);
-registerController(app, logOutController);
-
-app.use(authentication);
+registerControllers(app);
 
 app.get('*', function(req, res) {
-    res.send('<a href="/logOut">log out</a>');
+    res.send('<a href="' + routes.get.LOGOUT + '">log out</a>');
 });
 
 app.listen(8080);

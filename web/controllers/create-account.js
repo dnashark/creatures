@@ -1,5 +1,6 @@
 const PlayerModel = require('../../models/player');
-const accountCreationController = require('./account-creation');
+
+const routes = require('../routes');
 const error = require('../enums/account-creation-errors');
 
 /** @param {string} username */
@@ -23,37 +24,33 @@ function isValidPassword(password) {
   return password.length >= 1 && password.length <= 32;
 }
 
-module.exports = {
-  path: '/createAccount',
-  method: 'POST',
-  handle: async (req, res) => {
-    const {username, password} = req.body;
+module.exports = async function (req, res) {
+  const {username, password} = req.body;
 
-    if (!isValidUsername(username)) {
-      res.redirect(accountCreationController.path + '?err=' + error.INVALID_USERNAME + '&username=' + username);
-    }
-    if (!isValidPassword(password)) {
-      res.redirect(accountCreationController.path + '?err=' + error.INVALID_PASSWORD);
-    }
-
-    let player = null;
-    try {
-      player = await PlayerModel.create({
-          name: username,
-          password: password,
-          scenario: 'start',
-      });
-    } catch(err) {
-      if (err.name == 'MongoError' && err.code == 11000) {
-        res.redirect(accountCreationController.path + '?err=' + error.USERNAME_EXISTS + '&username=' + username);
-      } else {
-        console.log(err);
-        res.redirect(accountCreationController.path + '?err=' + error.UNKNOWN);
-      }
-      return;
-    }
-
-    req.session.userId = player._id;
-    res.redirect('/');  
+  if (!isValidUsername(username)) {
+    res.redirect(routes.GET.CREATE_ACCOUNT_PAGE + '?err=' + error.INVALID_USERNAME + '&username=' + username);
   }
+  if (!isValidPassword(password)) {
+    res.redirect(routes.GET.CREATE_ACCOUNT_PAGE + '?err=' + error.INVALID_PASSWORD);
+  }
+
+  let player = null;
+  try {
+    player = await PlayerModel.create({
+        name: username,
+        password: password,
+        scenario: 'start',
+    });
+  } catch(err) {
+    if (err.name == 'MongoError' && err.code == 11000) {
+      res.redirect(routes.GET.CREATE_ACCOUNT_PAGE + '?err=' + error.USERNAME_EXISTS + '&username=' + username);
+    } else {
+      console.log('Unknown account creation error: ' + err);
+      res.redirect(routes.GET.CREATE_ACCOUNT_PAGE + '?err=' + error.UNKNOWN);
+    }
+    return;
+  }
+
+  req.session.userId = player._id;
+  res.redirect('/');  
 };
