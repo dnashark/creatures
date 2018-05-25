@@ -3,7 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const authentication = require('./middleware/authentication');
-const createAccountView = require('./web/views/create-account');
+const accountCreationController = require('./web/controllers/account-creation');
+const createAccountController = require('./web/controllers/create-account');
+const logInController = require('./web/controllers/log-in');
+const logOutController = require('./web/controllers/log-out');
 
 const PlayerModel = require('./models/player');
 
@@ -20,47 +23,10 @@ app.use(cookieSession({
 
 app.use(express.urlencoded({extended: false}));
 
-app.get('/accountCreation', function(req, res) {
-    res.send(createAccountView.render());
-});
-
-app.post('/createAccount', async function(req, res) {
-    // TODO: Sanitize input
-    let player = null;
-    try {
-        player = await PlayerModel.create({
-            name: req.body.username,
-            password: req.body.password,
-        });
-    } catch(e) {
-        console.log(e);
-    }
-    if (player) {
-        req.session.userId = player._id;
-    }
-    res.redirect('/');
-});
-
-app.post('/logIn', async function(req, res) {
-    let player = null;
-    try {
-        player = await PlayerModel.findOne({name: req.body.username});
-        if (player && player.password != req.body.password) {
-            player = null;
-        }
-    } catch (e) {
-        console.log(e);
-    }
-    if (player) {
-        req.session.userId = player._id;
-    }
-    res.redirect('/');
-});
-
-app.get('/logOut', function(req, res) {
-    req.session = null;
-    res.redirect('/');
-})
+registerController(app, accountCreationController);
+registerController(app, createAccountController);
+registerController(app, logInController);
+registerController(app, logOutController);
 
 app.use(authentication);
 
@@ -69,3 +35,7 @@ app.get('*', function(req, res) {
 });
 
 app.listen(8080);
+
+function registerController(app, controller) {
+    app[controller.method.toLowerCase()](controller.path, controller.handle);
+}
