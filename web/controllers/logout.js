@@ -1,6 +1,7 @@
 const routes = require('../routes');
+const util = require('../util');
 
 module.exports = function(req, res) {
-  req.session = null;
+  util.logout(req);
   res.redirect(routes.get.HOME_PAGE);
 };

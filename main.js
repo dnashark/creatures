@@ -2,8 +2,9 @@ const cookieSession = require('cookie-session');
 const express = require('express');
 const mongoose = require('mongoose');
 
+const controllers = require('./web/controllers');
 const routes = require('./web/routes');
-const registerControllers = require('./web/register-controllers');
+const redirector = require('./web/middleware/redirector');
 
 const PlayerModel = require('./models/player');
 
@@ -19,15 +20,10 @@ app.use(cookieSession({
 }));
 
 app.use(express.urlencoded({extended: false}));
-
-registerControllers(app);
-
-app.get('*', function(req, res) {
-    res.send('<a href="' + routes.get.LOGOUT + '">log out</a>');
+app.use(redirector);
+controllers.registerControllers(app);
+app.use(function(req, res) {
+    res.redirect(routes.get.BASE_PAGE);
 });
 
 app.listen(8080);
-
-function registerController(app, controller) {
-    app[controller.method.toLowerCase()](controller.path, controller.handle);
-}

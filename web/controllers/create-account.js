@@ -1,7 +1,9 @@
 const PlayerModel = require('../../models/player');
 
 const routes = require('../routes');
+const scenarios = require('../scenarios');
 const error = require('../enums/account-creation-errors');
+const util = require('../util');
 
 /** @param {string} username */
 function isValidUsername(username) {
@@ -39,7 +41,7 @@ module.exports = async function (req, res) {
     player = await PlayerModel.create({
         name: username,
         password: password,
-        scenario: 'start',
+        scenario: scenarios.scenarios.STARTER,
     });
   } catch(err) {
     if (err.name == 'MongoError' && err.code == 11000) {
@@ -51,6 +53,6 @@ module.exports = async function (req, res) {
     return;
   }
 
-  req.session.userId = player._id;
-  res.redirect('/');  
+  util.login(req, player._id);
+  res.redirect('/');
 };
