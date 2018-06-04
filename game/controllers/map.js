@@ -1,11 +1,10 @@
 const Template = require('../../framework/template');
-const outerControllers = require('../../outer/controllers');
-const gameControllers = require('../controllers');
+const controllers = require('../../controllers');
 
 const CONTENT = new Template(
-  '<p><a href="' + outerControllers.LOGOUT.path + '" target="_parent">Log out</a></p>' +
+  '<p><a href="' + controllers.LOGOUT.path + '" target="_parent">Log out</a></p>' +
   '<ul>' +
-    '<li><a href="' + gameControllers.FARM_TOWN.path + '">Go to Farm Town</a></li>' +
+    '<li><a href="' + controllers.FARM_TOWN.path + '">Go to Farm Town</a></li>' +
   '</ul>'
 );
 

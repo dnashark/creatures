@@ -1,4 +1,4 @@
-const controllers = require('../controllers');
+const controllers = require('../../controllers');
 
 module.exports = function handleRequest(req, res) {
   req.gameSession.logout();

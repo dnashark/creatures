@@ -1,6 +1,6 @@
 const PlayerModel = require('../../models/player');
 const Template = require('../../framework/template');
-const controllers = require('../controllers');
+const controllers = require('../../controllers');
 
 async function handleRequest(req, res) {
   if (req.method == 'POST') {

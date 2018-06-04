@@ -1,4 +1,4 @@
-const controllers = require('../controllers');
+const controllers = require('../../controllers');
 
 module.exports = function(req, res) {
   res.send(

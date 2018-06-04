@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 
 const authenticatedRedirector = require('./middleware/authenticated-redirector');
 const backstopRedirector = require('./middleware/backstop-redirector');
-const outerControllers = require('./outer/controllers');
-const gameControllers = require('./game/controllers');
+const controllers = require('./controllers');
 
 // TODO: configurable
 mongoose.connect('mongodb://localhost/creatures');
@@ -12,8 +11,7 @@ const app = express();
 
 setupMiddleware(app);
 app.use(authenticatedRedirector);
-register(app, outerControllers);
-register(app, gameControllers);
+register(app, controllers);
 app.use(backstopRedirector);
 
 app.listen(8080);

@@ -1,12 +1,11 @@
-const outerControllers = require('../outer/controllers');
-const gameControllers = require('../game/controllers');
+const controllers = require('../controllers');
 
 module.exports = function(req, res) {
   if (req.path.startsWith('/game/')) {
-    res.redirect(gameControllers.MAP.path);
+    res.redirect(controllers.MAP.path);
   } else if (req.gameSession.isLoggedIn) {
-    res.redirect(outerControllers.PLAY.path);
+    res.redirect(controllers.PLAY.path);
   } else {
-    res.redirect(outerControllers.LOGIN.path);
+    res.redirect(controllers.LOGIN.path);
   }
 };
