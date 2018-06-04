@@ -1,14 +1,9 @@
-const Controller = require('../../framework/controller');
 const PlayerModel = require('../../models/player');
 const Template = require('../../framework/template');
-const playController = require('./play');
-
-const PATH = '/create-account';
+const controllers = require('../controllers');
 
 async function handleRequest(req, res) {
-  if (req.gameSession.isLoggedIn) {
-    res.redirect(playController.path);
-  } else if (req.method == 'POST') {
+  if (req.method == 'POST') {
     const {username, password, reenter} = req.body;
 
     let playerId;
@@ -32,7 +27,7 @@ async function handleRequest(req, res) {
     }
 
     req.gameSession.login(playerId);
-    res.redirect(playController.path);
+    res.redirect(controllers.PLAY.path);
   } else {
     res.send(CONTENT.apply({ERROR_MESSAGE: ''}))
   }
@@ -41,7 +36,7 @@ async function handleRequest(req, res) {
 const CONTENT = new Template(
   '<h2>Create account:</h2>' +
   '${ERROR_MESSAGE}' +
-  '<form action="' + PATH + '" method="POST">' +
+  '<form action="' + controllers.CREATE_ACCOUNT.path + '" method="POST">' +
     '<p>Username: <input type="text" name="username"></p>' +
     '<p>Password: <input type="password" name="password"></p>' +
     '<p>Re-enter password: <input type="password" name="reenter"></p>' +
@@ -96,6 +91,8 @@ async function createAccount(username, password, reenter) {
       throw new UnknownError();
     }
   }
+
+  return player._id;
 }
 
-module.exports = new Controller(PATH, handleRequest);
+module.exports = handleRequest;

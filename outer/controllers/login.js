@@ -1,15 +1,9 @@
-const Controller = require('../../framework/controller');
 const PlayerModel = require('../../models/player');
 const Template = require('../../framework/template');
-const createAccountController = require('./create-account');
-const playController = require('./play');
-
-const PATH = '/login';
+const controllers = require('../controllers');
 
 async function handleRequest(req, res) {
-  if (req.gameSession.isLoggedIn) {
-    res.redirect(playController.path);
-  } else if (req.method == 'POST') {
+  if (req.method == 'POST') {
     const {username, password} = req.body;
 
     let playerId;
@@ -27,7 +21,7 @@ async function handleRequest(req, res) {
     }
 
     req.gameSession.login(playerId);
-    res.redirect(playController.path);
+    res.redirect(controllers.PLAY.path);
   } else {
     res.send(CONTENT.apply({ERROR_MESSAGE: ''}));
   }
@@ -37,12 +31,12 @@ const CONTENT = new Template(
   '<h1>Welcome to Monster Training Unlimited!</h1>' +
   '<h2>Login</h2>'+
   '${ERROR_MESSAGE}' +
-  '<form action="' + PATH + '" method="POST">' +
+  '<form action="' + controllers.LOGIN.path + '" method="POST">' +
     '<p>Username: <input type="text" name="username"></p>' +
     '<p>Password: <input type="password" name="password"></p>' +
     '<p><input type="submit" value="login"></p>' +
   '</form>' +
-  '<h2>Don\'t have an account? <a href="' + createAccountController.path + '">Create one!</a></h2>'
+  '<h2>Don\'t have an account? <a href="' + controllers.CREATE_ACCOUNT.path + '">Create one!</a></h2>'
 );
 
 class UnknownLoginError {}
@@ -62,4 +56,4 @@ async function login(username, password) {
   return player._id;
 }
 
-module.exports = new Controller(PATH, handleRequest);
+module.exports = handleRequest;

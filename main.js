@@ -1,17 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const authenticatedRedirector = require('./middleware/authenticated-redirector');
+const backstopRedirector = require('./middleware/backstop-redirector');
+const outerControllers = require('./outer/controllers');
+const gameControllers = require('./game/controllers');
+
 // TODO: configurable
 mongoose.connect('mongodb://localhost/creatures');
 const app = express();
 
 setupMiddleware(app);
-setupOuterShell(app);
+app.use(authenticatedRedirector);
+register(app, outerControllers);
+register(app, gameControllers);
+app.use(backstopRedirector);
 
 app.listen(8080);
 
 
-/** @param {express} app */
 function setupMiddleware(app) {
   const GameSession = require('./framework/game-session');
 
@@ -23,17 +30,9 @@ function setupMiddleware(app) {
   app.use(express.urlencoded({extended: false}));
 }
 
-/** @param {express} app */
-function setupOuterShell(app) {
-  const Controller = require('./framework/controller');
-  const backstopRedirector = require('./outer/middleware/backstop-redirector');
-
-  Controller.register(app, [
-    require('./outer/controllers/login'),
-    require('./outer/controllers/create-account'),
-    require('./outer/controllers/play'),
-    require('./outer/controllers/logout'),
-  ]);
-
-  app.use(backstopRedirector);
+function register(app, controllers) {
+  for (key of Object.keys(controllers)) {
+    const controller = controllers[key];
+    app.all(controller.path, controller.requireHandler());
+  }
 }

@@ -1,7 +1,7 @@
 const cookieSession = require('cookie-session');
 
 // TODO: Need a configurable duration.
-const DURATION = 1000 * 60 * 1;
+const DURATION = 1000 * 60 * 30;
 
 // TODO: Need an actual configurable secret.
 const SECRET = 'Secret goes here.';
