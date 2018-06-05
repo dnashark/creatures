@@ -1,13 +1,8 @@
-const Template = require('../../framework/template');
 const controllers = require('../../controllers');
+const template = require('../../framework/template');
 
-const CONTENT = new Template(
-  '<p><a href="' + controllers.LOGOUT.path + '" target="_parent">Log out</a></p>' +
-  '<ul>' +
-    '<li><a href="' + controllers.FARM_TOWN.path + '">Go to Farm Town</a></li>' +
-  '</ul>'
-);
+const CONTENT = new template.FileTemplate(require.resolve('../views/map.html'));
 
 module.exports = function handleRequest(req, res) {
-  res.send(CONTENT.apply({}));
+  res.send(CONTENT.apply());
 };

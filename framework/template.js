@@ -1,11 +1,53 @@
-module.exports = class Template {
+const fs = require('fs');
+
+const constants = require('../constants');
+const controllers = require('../controllers');
+
+/**
+ * @param {string} content
+ * @returns {string} 
+ */
+function replacePaths(content) {
+  return content.replace(/@\{(\w+)\}/g, function(match, group) {
+    if (!controllers[group]) throw new Error('unresolved path');
+    return controllers[group].path;
+  });
+}
+
+function replaceConstants(content) {
+  return content.replace(/!\{(\w+)\}/g, function(match, group) {
+    if (constants[group] == undefined) throw new Error('unresolved constant');
+    return constants[group];
+  });
+}
+
+function replaceIf(content, variableValues) {
+  return content.replace(/\?\{(\w+)\:((\$\{\w+\}|[^]*?)*?)\}/g, function(match, group1, group2) {
+    return variableValues[group1] ? group2 : '';
+  });
+}
+
+function replaceIfNot(content, variableValues) {
+  return content.replace(/\^\{(\w+)\:((\$\{\w+\}|[^]*?)*?)\}/g, function(match, group1, group2) {
+    return !variableValues[group1] ? group2 : '';
+  });
+}
+
+function replaceVariables(content, variableValues) {
+  return content.replace(/\$\{(\w+)\}/g, function(match, group) {
+    const value = variableValues[group];
+    if (value === undefined || value === null) throw new Error('unresolved variable');
+    return value;
+  })
+}
+
+class StringTemplate {
   /**
    * @param {string} content 
    */
   constructor(content) {
     /** @private {string} */
-    this.content_ = content;
-    this.variableMap_ = createVariableMap(content);
+    this.content_ = replaceConstants(replacePaths(content));
   }
 
   /**
@@ -13,36 +55,28 @@ module.exports = class Template {
    * @returns {string} 
    */
   apply(variableValues) {
-    const THROW_ERROR = function() { throw new Error('Non-matching template values'); }
+    variableValues = variableValues || {};
 
-    if (Object.keys(variableValues).length != this.variableMap_.size) THROW_ERROR();
-    
-    let content = this.content_;
-    for (const variable of Object.keys(variableValues)) {
-      const regex = this.variableMap_.get(variable);
-      if (!regex) THROW_ERROR();
-
-      content = content.replace(regex, variableValues[variable]);
-    }
+    let content = replaceIf(this.content_, variableValues);
+    content = replaceIfNot(content, variableValues);
+    content = replaceVariables(content, variableValues);
     return content;
   }
 };
 
-/**
- * @param {string} content
- * @returns {!Map<string, !RegExp>} 
- */
-function createVariableMap(content) {
-  const VARIABLE_PATTERN = /\$\{(\w+)\}/g;
-
-  /** @type {!Map<string, !RegExp>} */
-  const variableMap = new Map();
-
-  let match;
-  while (match = VARIABLE_PATTERN.exec(content)) {
-    const variable = match[1];
-    variableMap.set(variable, new RegExp('\\$\\{' + variable + '\\}', 'g'));
+class FileTemplate extends StringTemplate {
+  /**
+   * @param {string} path 
+   * @param {boolean=} cache 
+   */
+  constructor(path) {
+    const content = fs.readFileSync(path, {encoding: 'utf8'});
+    super(content);
   }
-
-  return variableMap; 
 }
+
+// TODO: Should only have a single string template with methods fromString and fromFile
+module.exports = {
+  StringTemplate,
+  FileTemplate,
+};

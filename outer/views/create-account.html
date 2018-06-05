@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <title>!{TITLE}</title>
+  </head>
+  <body>
+    <h2>Create account:</h2>
+    ?{ERROR_MESSAGE:
+      <p><em>${ERROR_MESSAGE}</em></p>
+    }
+    <form action="@{CREATE_ACCOUNT}" method="POST">
+      <p>Username: <input type="text" name="username"></p>
+      <p>Password: <input type="password" name="password"></p>
+      <p>Re-enter password: <input type="password" name="reenter"></p>
+      <p><input type="submit" value="Create Account"></p>
+    </form>      
+  </body>
+</html>

@@ -1,9 +1,8 @@
 const controllers = require('../../controllers');
+const template = require('../../framework/template');
+
+const CONTENT = new template.FileTemplate(require.resolve('../views/dr-apples-lab.html'));
 
 module.exports = function(req, res) {
-  res.send(
-    '<h1>Dr. Apple\'s Lab</h1>' +
-    '<p>Welcome to Dr. Apple\'s lab!</p>' +
-    '<p><a href="' + controllers.FARM_TOWN.path + '">Exit to Farm Town</a></p>'
-  );
+  res.send(CONTENT.apply());
 };

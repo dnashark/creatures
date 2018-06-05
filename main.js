@@ -9,6 +9,9 @@ const controllers = require('./controllers');
 mongoose.connect('mongodb://localhost/creatures');
 const app = express();
 
+// TODO: Re-enable favicon when we have something
+app.get('/favicon.ico', function(req, res) { res.status(404).end(); });
+
 setupMiddleware(app);
 app.use(authenticatedRedirector);
 register(app, controllers);

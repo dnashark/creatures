@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>!{TITLE}</title>
+  </head>
+  <body>
+    <h1>Welcome to Monster Training World!</h1>
+    <h2>Login</h2>
+    ?{ERROR_MESSAGE:
+      <p><em>${ERROR_MESSAGE}</em></p>
+    }
+    <form action="@{LOGIN}" method="POST">
+      <p>Username: <input type="text" name="username"></p>
+      <p>Password: <input type="password" name="password"></p>
+      <p><input type="submit" value="login"></p>
+    </form>
+    <h2>Don't have an account? <a href="@{CREATE_ACCOUNT}">Create one!</a></h2>    
+  </body>
+</html>

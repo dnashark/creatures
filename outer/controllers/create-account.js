@@ -1,6 +1,6 @@
 const PlayerModel = require('../../models/player');
-const Template = require('../../framework/template');
 const controllers = require('../../controllers');
+const template = require('../../framework/template');
 
 async function handleRequest(req, res) {
   if (req.method == 'POST') {
@@ -12,14 +12,14 @@ async function handleRequest(req, res) {
     } catch(err) {
       if (err instanceof InvalidUsernameError) {
         res.send(CONTENT.apply({
-          ERROR_MESSAGE: '<p><em>Username must be alphanumeric and between 3 and 32 characters long.</em></p>'
+          ERROR_MESSAGE: 'Username must be alphanumeric and between 3 and 32 characters long.'
         }));
       } else if (err instanceof UsernameExistsError) {
-        res.send(CONTENT.apply({ERROR_MESSAGE: '<p><em>Username, ' + username + ', is already in use.</em></p>'}));
+        res.send(CONTENT.apply({ERROR_MESSAGE: 'Username, ' + username + ', is already in use.'}));
       } else if (err instanceof InvalidPasswordError) {
-        res.send(CONTENT.apply({ERROR_MESSAGE: '<p><em>Passwords must be between 1 and 32 characters long.</em></p>'}));
+        res.send(CONTENT.apply({ERROR_MESSAGE: 'Passwords must be between 1 and 32 characters long.'}));
       } else if (err instanceof PasswordsDoNotMatchError) {
-        res.send(CONTENT.apply({ERROR_MESSAGE: '<p><em>Passwords did not match.</em></p>'}));
+        res.send(CONTENT.apply({ERROR_MESSAGE: 'Passwords did not match.'}));
       } else {
         throw err;
       }
@@ -33,16 +33,7 @@ async function handleRequest(req, res) {
   }
 }
 
-const CONTENT = new Template(
-  '<h2>Create account:</h2>' +
-  '${ERROR_MESSAGE}' +
-  '<form action="' + controllers.CREATE_ACCOUNT.path + '" method="POST">' +
-    '<p>Username: <input type="text" name="username"></p>' +
-    '<p>Password: <input type="password" name="password"></p>' +
-    '<p>Re-enter password: <input type="password" name="reenter"></p>' +
-    '<p><input type="submit" value="Create Account"></p>' +
-  '</form>'
-);
+const CONTENT = new template.FileTemplate(require.resolve('../views/create-account.html'));
 
 /** @param {string} username */
 function isValidUsername(username) {
