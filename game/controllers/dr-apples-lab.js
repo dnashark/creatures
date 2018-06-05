@@ -1,8 +1,3 @@
-const controllers = require('../../controllers');
-const template = require('../../framework/template');
+const events = require('../events');
 
-const CONTENT = new template.FileTemplate(require.resolve('../views/dr-apples-lab.html'));
-
-module.exports = function(req, res) {
-  res.send(CONTENT.apply());
-};
+module.exports = (req, res) => events.DR_APPLE_WELCOME.handle(req, res);
