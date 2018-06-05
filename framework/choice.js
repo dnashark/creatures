@@ -2,18 +2,12 @@ const template = require('./template');
 
 class Choice {
   /**
-   * @param {string} name
-   * @param {string} title
-   * @param {!Array<!string>} paragraphs 
-   * @param {!Array<!Option>} options 
+   * @param {{name: string, title: ?string, paragraphs: !Array<string>, options: !Array<!Option>}} args
    */
-  constructor(name, title, paragraphs, options) {
-    this.name_ = name;
-    this.template_ = constructTemplate(title, paragraphs, options);
-    this.optionNamesToTransitions_ = {};
-    for (const option of options) {
-      this.optionNamesToTransitions_[option.name] = option.transition;
-    }
+  constructor(args) {
+    this.name_ = args.name;
+    this.template_ = constructTemplate(args.name, args.title, args.paragraphs, args.options);
+    this.transitions_ = args.options.map((option) => option.transition);
   }
 
   get name() { return this.name_; }
@@ -23,40 +17,46 @@ class Choice {
   }
 
   async handleRequest(req, res) {
-    let transition;
-    if (req.method == 'POST' && req.body.option && (transition = this.optionNamesToTransitions_[req.body.option])) {
-      await transition.handleRequest(req, res);
-    } else {
-      this.handlePage(req, res);
+    if (req.body.choice && req.body.choice == this.name && req.body.option) {
+      const optionIndex = parseInt(req.body.option, 10);
+      if (optionIndex >= 0 && optionIndex < this.transitions_.length) {
+        await this.transitions_[optionIndex].handleRequest(req, res);
+        return;
+      }
     }
+    
+    this.handlePage(req, res);
   }
 }
 
 Choice.Option = class {
-  constructor(name, description, transition) {
-    this.name = name;
+  constructor(description, transition) {
     this.description = description;
     this.transition = transition;
   }
 }
 
 /**
+ * @param {string} name The name of the choice
  * @param {string} title
  * @param {!Array<!string>} paragraphs
  * @param {!Array<!Option>} options
  */
-function constructTemplate(title, paragraphs, options) {
+function constructTemplate(name, title, paragraphs, options) {
   let content = '<h1>' + title + '</h1>'
   for (const paragraph of paragraphs) {
     content += '<p>' + paragraph + '</p>';
   }
+  let i = 0;
   for (const option of options) {
     content += (
       '<form action="@{CHOICE}" method=POST>' +
-        '<input type="hidden" name="option" value="' + option.name + '">' +
+        '<input type="hidden" name="option" value="' + i + '">' +
+        '<input type="hidden" name="choice" value="' + name + '">' +
         '<input type="submit" value="' + option.description + '">' +
       '</form>'
     );
+    i++;
   }
 
   return new template.StringTemplate(content);

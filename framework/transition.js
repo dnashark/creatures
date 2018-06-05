@@ -3,18 +3,17 @@ const template = require('../framework/template');
 
 class Transition {
   /**
-   * @param {?Transition.Event} event
-   * @param {?Choice} next
+   * @param {{event: {title: string, paragraphs: !Array<string>, handler: function}, next: ?Choice}} args
    */
-  constructor(event, next) {
+  constructor(args) {
     /** @private */
-    this.eventData_ = event && {
-      template: constructEventTemplate(event.title, event.paragraphs, next),
-      handler: event.handler,
+    this.eventData_ = args.event && {
+      template: constructEventTemplate(args.event.title, args.event.paragraphs, args.next),
+      handler: args.event.handler,
     };
 
     /** @private */
-    this.next_ = next;
+    this.next_ = args.next;
   }
 
   async handleRequest(req, res) {
@@ -52,14 +51,6 @@ function constructEventTemplate(title, paragraphs, next) {
   }
 
   return new template.StringTemplate(content);
-}
-
-Transition.Event = class {
-  constructor(title, paragraphs, handler) {
-    this.title = title;
-    this.paragraphs = paragraphs.slice();
-    this.handler = handler;
-  }
 }
 
 module.exports = Transition;
