@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const activeScenarioRedirector = require('./middleware/active-scenario-redirector');
 const authenticatedRedirector = require('./middleware/authenticated-redirector');
 const backstopRedirector = require('./middleware/backstop-redirector');
 const controllers = require('./controllers');
+const playerModelAnnotator = require('./middleware/player-model-annotater');
 
 // TODO: configurable
 mongoose.connect('mongodb://localhost/creatures');
@@ -14,6 +16,8 @@ app.get('/favicon.ico', function(req, res) { res.status(404).end(); });
 
 setupMiddleware(app);
 app.use(authenticatedRedirector);
+app.use(playerModelAnnotator);
+app.use(activeScenarioRedirector);
 register(app, controllers);
 app.use(backstopRedirector);
 

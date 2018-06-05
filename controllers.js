@@ -4,6 +4,8 @@ module.exports = {
   LOGOUT: outerController('logout'),
   PLAY: outerController('play'),
 
+  CHOICE: gameController('choice'),
+
   MAP: gameController('map'),
   FARM_TOWN: gameController('farm-town'),
   DR_APPLES_LAB: gameController('dr-apples-lab'),
@@ -16,9 +18,16 @@ function outerController(moduleName) {
   };
 }
 
-function gameController(moduleName) {
-  return {
-    path: '/game/' + moduleName,
-    requireHandler: () => require('./game/controllers/' + moduleName),
-  };
+function gameController(moduleName, controllerName) {
+  if (controllerName) {
+    return {
+      path: '/game/' + moduleName + '/' + controllerName,
+      requireHandler: () => require('./game/controllers/' + moduleName)[controllerName],
+    };
+  } else {
+    return {
+      path: '/game/' + moduleName,
+      requireHandler: () => require('./game/controllers/' + moduleName),
+    };
+  }
 }

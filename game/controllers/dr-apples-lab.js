@@ -1,3 +1,8 @@
-const events = require('../events');
+const Transition = require('../../framework/transition');
+const starterChoice = require('../choices/starter');
 
-module.exports = (req, res) => events.DR_APPLE_WELCOME.handle(req, res);
+const transition = new Transition(new Transition.Event('Original Event', ['some event body'], null), starterChoice.test1);
+
+module.exports = async function (req, res) {
+  await transition.handleRequest(req, res);
+};

@@ -9,14 +9,14 @@ const controllers = require('../controllers');
  */
 function replacePaths(content) {
   return content.replace(/@\{(\w+)\}/g, function(match, group) {
-    if (!controllers[group]) throw new Error('unresolved path');
+    if (!controllers[group]) throw new Error('unresolved path: ' + match);
     return controllers[group].path;
   });
 }
 
 function replaceConstants(content) {
   return content.replace(/!\{(\w+)\}/g, function(match, group) {
-    if (constants[group] == undefined) throw new Error('unresolved constant');
+    if (constants[group] == undefined) throw new Error('unresolved constant: ' + match);
     return constants[group];
   });
 }
@@ -36,7 +36,7 @@ function replaceIfNot(content, variableValues) {
 function replaceVariables(content, variableValues) {
   return content.replace(/\$\{(\w+)\}/g, function(match, group) {
     const value = variableValues[group];
-    if (value === undefined || value === null) throw new Error('unresolved variable');
+    if (value === undefined || value === null) throw new Error('unresolved variable: ' + match);
     return value;
   })
 }
