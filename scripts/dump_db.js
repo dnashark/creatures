@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MonsterModel = require('../models/monster');
+const {MonsterModel} = require('../models/monster');
 const PlayerModel = require('../models/player');
 
 mongoose.connect('mongodb://localhost/creatures');
