@@ -38,6 +38,8 @@ function transition(monster) {
         req.player.transaction = {
           addMonsters: [{owner: req.player._id, type: monster.number}],
         };
+        // TODO: Use state enum
+        req.player.state.apple = 1;
         await req.player.save();
         transaction.ensure(req.player.transaction);
         req.player.transaction = null;
