@@ -1,5 +1,6 @@
 const Choice = require('../../framework/choice');
 const Transition = require('../../framework/transition');
+const transaction = require('../../models/transaction');
 
 const fierrel = require('../../monsters/fierrel');
 const wahthon = require('../../monsters/wahthon');
@@ -20,7 +21,7 @@ module.exports = new Choice({
   ],
   options: [
     new Choice.Option('Take Fierrel', transition(fierrel)),
-    new Choice.Option('Take Wahthon,', transition(wahthon)),
+    new Choice.Option('Take Wahthon', transition(wahthon)),
     new Choice.Option('Take Taycorn', transition(taycorn)),
   ],
 });
@@ -33,8 +34,13 @@ function transition(monster) {
       paragraphs: [
         'You take the monster trap containing the ' + monster.name.toLowerCase() + ' from the table.',
       ],
-      handler: function(req) {
-        req.player.addMonsters.push({type: monster.number});
+      handler: async function(req) {
+        req.player.transaction = {
+          addMonsters: [{owner: req.player._id, type: monster.number}],
+        };
+        await req.player.save();
+        transaction.ensure(req.player.transaction);
+        req.player.transaction = null;
       },
     },
   });

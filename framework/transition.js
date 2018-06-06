@@ -23,9 +23,9 @@ class Transition {
       req.player.activeChoice = null;
     }
 
-    const respond = (() => {
+    const respond = await (async () => {
       if (this.eventData_) {
-        const model = this.eventData_.handler && this.eventData_.handler(req);
+        const model = this.eventData_.handler && await this.eventData_.handler(req);
         return () => res.send(this.eventData_.template.apply(model));
       } else if (this.next_) {
         return () => this.next_.handlePage(req, res);

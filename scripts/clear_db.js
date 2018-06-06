@@ -11,7 +11,7 @@ async function clear(model) {
 mongoose.connect('mongodb://localhost/creatures');
 
 (async function() {
-  //await clear(MonsterModel);
+  await clear(MonsterModel);
   await clear(PlayerModel);
   mongoose.disconnect();
 })();

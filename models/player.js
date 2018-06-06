@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const {MonsterSchema} = require('./monster');
+const {TransactionSchema} = require('./transaction');
 
 // TODO: Password should be hashed
 const PlayerSchema = new mongoose.Schema({
@@ -8,7 +9,7 @@ const PlayerSchema = new mongoose.Schema({
   password: {type: String, required: true, min: 1},
   activeChoice: {type: String, require: false},
 
-  addMonsters: [MonsterSchema],
+  transaction: {type: TransactionSchema, require: false},
 });
 
 module.exports = mongoose.model('Player', PlayerSchema);
