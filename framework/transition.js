@@ -18,7 +18,7 @@ class Transition {
 
   async handleRequest(req, res) {
     if (this.next_) {
-      req.player.activeChoice = this.next_.name;
+      req.player.activeChoice = this.next_.module.name;
     } else if (req.player.activeChoice) {
       req.player.activeChoice = null;
     }
@@ -27,8 +27,8 @@ class Transition {
       if (this.eventData_) {
         const model = this.eventData_.handler && await this.eventData_.handler(req);
         return () => res.send(this.eventData_.template.apply(model));
-      } else if (this.next_) {
-        return () => this.next_.handlePage(req, res);
+      } else if (this.next_.module) {
+        return () => this.next_.module.handlePage(req, res);
       } else {
         return () => res.redirect(controllers.MAP.path);
       }

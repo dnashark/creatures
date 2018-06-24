@@ -1,5 +1,5 @@
 const Transition = require('../../framework/transition');
-const starterChoice = require('../choices/starter-monster');
+const choices = require('../../choices');
 
 /** @enum {number} */
 const STATE = {
@@ -14,7 +14,7 @@ const starterTransition = new Transition({
       'This is a world inhabited by monsters that can be caught, trained, and battled.',
     ],
   },
-  next: starterChoice,
+  next: choices.STARTER_MONSTER,
 });
 
 const comeBackLaterTransition = new Transition({
@@ -34,3 +34,5 @@ module.exports = async function (req, res) {
     await comeBackLaterTransition.handleRequest(req, res);
   }
 };
+
+module.exports.STATE = STATE;

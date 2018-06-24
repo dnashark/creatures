@@ -4,11 +4,13 @@ module.exports = {
   LOGOUT: outerController('logout'),
   PLAY: outerController('play'),
 
+  BATTLE: gameController('battle'),
   CHOICE: gameController('choice'),
 
   MAP: gameController('map'),
-  FARM_TOWN: gameController('farm-town'),
-  DR_APPLES_LAB: gameController('dr-apples-lab'),
+    FARM_TOWN: gameController('farm-town'),
+      DR_APPLES_LAB: gameController('dr-apples-lab'),
+    FOREST: gameController('forest'),
 };
 
 function outerController(moduleName) {

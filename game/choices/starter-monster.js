@@ -1,6 +1,6 @@
 const Choice = require('../../framework/choice');
 const Transition = require('../../framework/transition');
-const transaction = require('../../models/transaction');
+const drApplesLabController = require('../controllers/dr-apples-lab');
 
 const fierrel = require('../../monsters/fierrel');
 const wahthon = require('../../monsters/wahthon');
@@ -35,14 +35,12 @@ function transition(monster) {
         'You take the monster trap containing the ' + monster.name.toLowerCase() + ' from the table.',
       ],
       handler: async function(req) {
-        req.player.transaction = {
-          addMonsters: [{owner: req.player._id, type: monster.number}],
-        };
-        // TODO: Use state enum
-        req.player.state.apple = 1;
-        await req.player.save();
-        transaction.ensure(req.player.transaction);
-        req.player.transaction = null;
+        if (req.player.party.length) throw new Error('Player shouldn\'t have a monster yet.');
+        req.player.party.push({
+          type: monster.number,
+        });
+        req.player.state.apple = drApplesLabController.STATE.HAVE_STARTER;
+        req.player.state.unlocked.forest = 1;
       },
     },
   });

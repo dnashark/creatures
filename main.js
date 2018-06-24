@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const activeScenarioRedirector = require('./middleware/active-scenario-redirector');
+const forcedSceneRedirector = require('./middleware/forced-scene-redirector');
 const authenticatedRedirector = require('./middleware/authenticated-redirector');
 const backstopRedirector = require('./middleware/backstop-redirector');
+const choices = require('./choices');
 const controllers = require('./controllers');
 const playerModelAnnotator = require('./middleware/player-model-annotater');
-const transactionCompleter = require('./middleware/transaction-completer');
 
 // TODO: configurable
 mongoose.connect('mongodb://localhost/creatures');
@@ -15,13 +15,15 @@ const app = express();
 // TODO: Re-enable favicon when we have something
 app.get('/favicon.ico', function(req, res) { res.status(404).end(); });
 
+choices.init();
+
 setupMiddleware(app);
 app.use(authenticatedRedirector);
 app.use(playerModelAnnotator);
-app.use(transactionCompleter);
-app.use(activeScenarioRedirector);
+app.use(forcedSceneRedirector);
 register(app, controllers);
 app.use(backstopRedirector);
+
 
 app.listen(8080);
 
