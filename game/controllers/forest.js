@@ -1,7 +1,9 @@
-const battleController = require('./battle');
+const Adventure = require('../../framework/adventure');
+
+const BATTLE_ADVENTURE = new Adventure({battleGenerator: {}});
 
 module.exports = async function(req, res) {
-  req.player.activeBattle = {};
+  const content = await BATTLE_ADVENTURE.handler(req);
   await req.player.save();
-  res.send(battleController.content.apply());
+  res.send(content);
 };
