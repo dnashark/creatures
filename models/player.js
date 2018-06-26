@@ -16,7 +16,7 @@ const PlayerSchema = new mongoose.Schema({
   username: {type: String, required: true, min: 3, max: 32, unique: true},
   password: {type: String, required: true, min: 1},
   
-  activeChoice: {type: String, require: false, default: null},
+  activeChoice: {type: Number, require: false, default: null},
   activeBattle: {type: BattleSchema, require: false, default: null},
 
   party: {type: [MonsterSchema], require: true, default: []},

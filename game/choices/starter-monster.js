@@ -1,5 +1,6 @@
+const Adventure = require('../../framework/adventure');
 const Choice = require('../../framework/choice');
-const Transition = require('../../framework/transition');
+const Event = require('../../framework/event');
 const drApplesLabController = require('../controllers/dr-apples-lab');
 
 const fierrel = require('../../monsters/fierrel');
@@ -7,7 +8,6 @@ const wahthon = require('../../monsters/wahthon');
 const taycorn = require('../../monsters/taycorn');
 
 module.exports = new Choice({
-  name: 'starter',
   title: 'Choose Your Starter Monster',
   paragraphs: [
     'Dr. Apple leads you to a room in the back of his lab. There is a table with three monster traps ' +
@@ -20,28 +20,26 @@ module.exports = new Choice({
     'or you may pick seed monster, Taycorn."',
   ],
   options: [
-    new Choice.Option('Take Fierrel', transition(fierrel)),
-    new Choice.Option('Take Wahthon', transition(wahthon)),
-    new Choice.Option('Take Taycorn', transition(taycorn)),
+    new Choice.Option('Take Fierrel', adventure(fierrel)),
+    new Choice.Option('Take Wahthon', adventure(wahthon)),
+    new Choice.Option('Take Taycorn', adventure(taycorn)),
   ],
 });
 
 /** @param {MonsterType} monster */
-function transition(monster) {
-  return new Transition({
-    event: {
+function adventure(monster) {
+  return new Adventure({
+    event: new Event({
       title: 'I choose you!',
-      paragraphs: [
-        'You take the monster trap containing the ' + monster.name.toLowerCase() + ' from the table.',
-      ],
-      handler: async function(req) {
-        if (req.player.party.length) throw new Error('Player shouldn\'t have a monster yet.');
-        req.player.party.push({
+      paragraphs: ['You take the monster trap containing the ' + monster.name.toLowerCase() + ' from the table.'],
+      handler: async function(player) {
+        if (player.party.length) throw new Error('Player shouldn\'t have a monster yet.');
+        player.party.push({
           type: monster.number,
         });
-        req.player.state.apple = drApplesLabController.STATE.HAVE_STARTER;
-        req.player.state.unlocked.forest = 1;
+        player.state.apple = drApplesLabController.STATE.HAVE_STARTER;
+        player.state.unlocked.forest = 1;
       },
-    },
+    }),
   });
 }

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const forcedSceneRedirector = require('./middleware/forced-scene-redirector');
 const authenticatedRedirector = require('./middleware/authenticated-redirector');
 const backstopRedirector = require('./middleware/backstop-redirector');
-const choices = require('./choices');
+const choiceRegistrar = require('./choice-registrar');
 const controllers = require('./controllers');
 const playerModelAnnotator = require('./middleware/player-model-annotater');
 
@@ -15,7 +15,7 @@ const app = express();
 // TODO: Re-enable favicon when we have something
 app.get('/favicon.ico', function(req, res) { res.status(404).end(); });
 
-choices.init();
+choiceRegistrar.init();
 
 setupMiddleware(app);
 app.use(authenticatedRedirector);

@@ -1,62 +1,53 @@
+const contentUtil = require('./content-util');
 const template = require('./template');
 
 class Choice {
   /**
-   * @param {{name: string, title: ?string, paragraphs: !Array<string>, options: !Array<!Option>}} args
+   * @param {{title: ?string, paragraphs: !Array<string>, options: !Array<!Option>}} args
    */
   constructor(args) {
-    this.name_ = args.name;
-    this.template_ = constructTemplate(args.name, args.title, args.paragraphs, args.options);
-    this.transitions_ = args.options.map((option) => option.transition);
+    this.template_ = constructTemplate(args.title, args.paragraphs, args.options);
+    this.nextAdventures_ = args.options.map((option) => option.nextAdventure);
   }
 
-  get name() { return this.name_; }
-
-  handlePage(req, res) {
-    res.send(this.template_.apply());
+  pageHandler() {
+    return this.template_.apply();
   }
 
-  async handleRequest(req, res) {
-    if (req.body.choice && req.body.choice == this.name && req.body.option) {
+  async handler(req) {
+    if (req.body.option) {
       const optionIndex = parseInt(req.body.option, 10);
-      if (optionIndex >= 0 && optionIndex < this.transitions_.length) {
-        await this.transitions_[optionIndex].handleRequest(req, res);
-        return;
+      if (optionIndex >= 0 && optionIndex < this.nextAdventures_.length) {
+        return await this.nextAdventures_[optionIndex].handler(req);
       }
     }
     
-    this.handlePage(req, res);
+    return this.pageHandler();
   }
 }
 
 Choice.Option = class {
-  constructor(description, transition) {
+  constructor(description, nextAdventure) {
     this.description = description;
-    this.transition = transition;
+    this.nextAdventure = nextAdventure;
   }
 }
 
 /**
- * @param {string} name The name of the choice
  * @param {string} title
  * @param {!Array<!string>} paragraphs
  * @param {!Array<!Option>} options
  */
-function constructTemplate(name, title, paragraphs, options) {
-  let content = '<h1>' + title + '</h1>'
-  for (const paragraph of paragraphs) {
-    content += '<p>' + paragraph + '</p>';
-  }
-  let i = 0;
-  for (const option of options) {
+function constructTemplate(title, paragraphs, options) {
+  let content = contentUtil.create({title, paragraphs});
+
+  for (let i = 0; i < options.length; i++) {
     content += (
       '<form action="@{CHOICE}" method=POST>' +
         '<input type="hidden" name="option" value="' + i + '">' +
-        '<input type="hidden" name="choice" value="' + name + '">' +
-        '<input type="submit" value="' + option.description + '">' +
+        '<input type="submit" value="' + options[i].description + '">' +
       '</form>'
     );
-    i++;
   }
 
   return new template.StringTemplate(content);
