@@ -1,4 +1,4 @@
-const battleHandler = require('../../framework/battle-handler');
+const battleHandler = require('../../battle/battle-handler');
 const controllers = require('../../controllers');
 
 module.exports = async function(req, res) {

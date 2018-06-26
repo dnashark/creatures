@@ -1,30 +1,54 @@
+const Int32 = require('mongoose-int32');
 const mongoose = require('mongoose');
 
 const {monsters} = require('./monsters');
 
 const MonsterSchema = new mongoose.Schema({
-  type: {type: Number, min: 1, required: true},
-  level: {type: Number, min: 1, max: 100, required: true},
+  type: {type: Int32, min: 1, required: true},
+  level: {type: Int32, min: 1, max: 100, required: true},
   
-  hp: {type: Number, required: false, default: null},
-}, {id: false});
+  hp: {type: Int32, required: false},
+  sp: {type: Int32, required: false},
+}, {_id: false});
 
-MonsterSchema.statics.computeStat = (baseStat, level) => (5 + Math.floor(baseState * level / 100));
+MonsterSchema.statics.computeStat = computeStat;
+MonsterSchema.statics.computeMaxHp = computeMaxHp;
+MonsterSchema.statics.computeMaxSp = computeMaxSp;
+
+MonsterSchema.methods.initTransients = function() {
+  this.hp = this.maxHp;
+  this.sp = this.maxSp;
+};
+MonsterSchema.methods.clearTransients = function() {
+  this.hp = null;
+  this.sp = null;
+};
 
 MonsterSchema.virtual('archetype').get(function() { return monsters[this.type]; });
 
-for (const stat of ['health', 'stamina', 'speed'])
-MonsterSchema.virtual('health').get(function() { return MonsterSchema.computeStat(this.archetype.baseHealth, this.level); });
-MonsterSchema.virtual('stamina').get(function() { return MonsterSchema.computeStat(this.archetype.baseStamina, this.level); });
-MonsterSchema.virtual('speed').get(function() { return MonsterSchema.computeStat(this.archetype.baseSpeed, this.level); });
-MonsterSchema.virtual('attack').get(function() { return MonsterSchema.computeStat(this.archetype.baseAttack, this.level); });
-MonsterSchema.virtual('defense').get(function() { return MonsterSchema.computeStat(this.archetype.baseDefense, this.level); });
-MonsterSchema.virtual('specialAttack').get(
-  function() { return MonsterSchema.computeStat(this.archetype.baseSpecialAttack, this.level); });
-MonsterSchema.virtual('specialDefense').get(
-  function() { return MonsterSchema.computeStat(this.archetype.baseSpecialDefense, this.level); });
+MonsterSchema.virtual('name').get(function() { return this.archetype.name; });
 
-MonsterSchema.virtual('maxHp').get(function() { return this.health * 2; });
-MonsterSchema.virtual('maxSp').get(function() { return this.stamina * 2; });
+MonsterSchema.virtual('health').get(function() { return computeStat(this.archetype.baseHealth, this.level); });
+MonsterSchema.virtual('stamina').get(function() { return computeStat(this.archetype.baseStamina, this.level); });
+MonsterSchema.virtual('speed').get(function() { return computeStat(this.archetype.baseSpeed, this.level); });
+MonsterSchema.virtual('attack').get(function() { return computeStat(this.archetype.baseAttack, this.level); });
+MonsterSchema.virtual('defense').get(function() { return computeStat(this.archetype.baseDefense, this.level); });
+MonsterSchema.virtual('specialAttack').get(function() { return computeStat(this.archetype.baseSpecialAttack, this.level); });
+MonsterSchema.virtual('specialDefense').get(function() { return computeStat(this.archetype.baseSpecialDefense, this.level); });
+
+MonsterSchema.virtual('maxHp').get(function() { return computeMaxHp(this.archetype.baseHealth, this.level); });
+MonsterSchema.virtual('maxSp').get(function() { return computeMaxSp(this.archetype.baseStamina, this.level); });
+
+function computeStat(baseStat, level) {
+  return 5 + Math.floor(baseStat * level / 100);
+}
+
+function computeMaxHp(baseHealth, level) {
+  return 2 * computeStat(baseHealth, level);
+}
+
+function computeMaxSp(baseHealth, level) {
+  return 2 * computeStat(baseHealth, level);
+}
 
 module.exports = MonsterSchema;

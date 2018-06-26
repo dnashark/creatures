@@ -1,4 +1,4 @@
-const battleHandler = require('./battle-handler');
+const battleHandler = require('../battle/battle-handler');
 const choiceRegistrar = require('../choice-registrar');
 const controllers = require('../controllers');
 const template = require('./template');
@@ -15,7 +15,11 @@ module.exports = class Adventure {
 
   async handler(req) {
     req.player.activeChoice = this.choiceId_ || null;
-    req.player.activeBattle = this.battleGenerator_ ? {} : null;
+    if (this.battleGenerator_) {
+      this.battleGenerator_.setActiveBattle(req.player);
+    } else {
+      req.player.activeBattle = null;
+    }
 
     if (this.event_) {
       return await this.handleEvent_(req.player);

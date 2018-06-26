@@ -33,7 +33,7 @@ function adventure(monsterId) {
       paragraphs: ['You take the monster trap containing the ' + monster.name.toLowerCase() + ' from the table.'],
       handler: async function(player) {
         if (player.party.length) throw new Error('Player shouldn\'t have a monster yet.');
-        player.party.push({
+        player.addToParty({
           type: monsterId,
           level: 1,
         });

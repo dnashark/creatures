@@ -9,7 +9,7 @@ const StateSchema = new mongoose.Schema({
 
 const DungeonSchema = new mongoose.Schema({
   isUnlocked: {type: Boolean, required: true, default: false},
-});
+}, {_id: false});
 
 // TODO: Password should be hashed
 const PlayerSchema = new mongoose.Schema({
@@ -19,11 +19,21 @@ const PlayerSchema = new mongoose.Schema({
   activeChoice: {type: Number, require: false, default: null},
   activeBattle: {type: BattleSchema, require: false, default: null},
 
-  party: {type: [MonsterSchema], require: true, default: []},
+  party: [MonsterSchema],
 
   state: {type: StateSchema, required: true, default: {}},
 
   dungeon_data: {type: Map, of: DungeonSchema, required: true, default: {}},
 });
+
+PlayerSchema.methods.addToParty = function(monster) {
+  if (this.isPartyFull) return false;
+
+  this.party.push(monster);
+  this.party[this.party.length - 1].initTransients();
+  return true;
+}
+
+PlayerSchema.virtual('isPartyFull').get(function() { return this.party.length == 6; });
 
 module.exports = mongoose.model('Player', PlayerSchema);

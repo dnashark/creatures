@@ -1,9 +1,11 @@
 const Adventure = require('../../framework/adventure');
 const Dungeon = require('../../framework/dungeon');
 const Event = require('../../framework/event');
+const WildMonsterBattleGenerator = require('../../battle/wild-monster-battle-generator');
+const {monsterIds} = require('../../monsters/monsters');
 
 const BATTLE_ADVENTURE = new Adventure({
-  battleGenerator: {}
+  battleGenerator: new WildMonsterBattleGenerator(monsterIds.CRYSBADGER, 1, 1),
 });
 
 const EVENT_ADVENTURE = new Adventure({
