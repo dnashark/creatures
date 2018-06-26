@@ -11,7 +11,7 @@ for (const filename of fs.readdirSync(__dirname + '/../dungeons')) {
 
 module.exports = async function(req, res) {
   const dungeon = req.query.name && dungeons[req.query.name];
-  if (dungeon) {
+  if (dungeon && dungeon.isUnlockedFor(req.player)) {
     const content = await dungeon.handler(req);
     await req.player.save();
     res.send(content);

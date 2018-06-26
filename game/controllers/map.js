@@ -6,7 +6,7 @@ const CONTENT = new template.FileTemplate(require.resolve('../views/map.html'));
 
 module.exports = function handleRequest(req, res) {
   res.send(CONTENT.apply({
-    forestUnlocked: forestDungeon.isUnlocked,
+    forestUnlocked: forestDungeon.isUnlockedFor(req.player),
     forestPath: forestDungeon.path,
   }));
 };

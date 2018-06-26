@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MonsterSchema = require('./monster');
+const MonsterSchema = require('../monsters/monster');
 const BattleSchema = require('./battle');
 
 const StateSchema = new mongoose.Schema({
@@ -20,6 +20,8 @@ const PlayerSchema = new mongoose.Schema({
   activeBattle: {type: BattleSchema, require: false, default: null},
 
   party: {type: [MonsterSchema], require: true, default: []},
+
+  state: {type: StateSchema, required: true, default: {}},
 
   dungeon_data: {type: Map, of: DungeonSchema, required: true, default: {}},
 });

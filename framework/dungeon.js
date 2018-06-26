@@ -14,16 +14,16 @@ module.exports = class Dungeon {
     return controllers.DUNGEON.path + '?name=' + this.name_;
   }
 
-  isUnlocked(player) {
-    return this.getDungeonData(player).isUnlocked;
+  isUnlockedFor(player) {
+    return this.getDungeonDataFor(player).isUnlocked;
   }
 
-  unlock(player) {
-    this.getDungeonData(player).isUnlocked = true;
+  unlockFor(player) {
+    this.getDungeonDataFor(player).isUnlocked = true;
   }
 
-  lock(player) {
-    this.getDungeonData(player).isUnlocked = false;
+  lockFor(player) {
+    this.getDungeonDataFor(player).isUnlocked = false;
   }
 
   async handler(req) {
@@ -31,7 +31,7 @@ module.exports = class Dungeon {
     return await this.adventures_[index].handler(req);
   }
 
-  getDungeonData(player) {
+  getDungeonDataFor(player) {
     let data = player.dungeon_data.get(this.name_);
     if (!data) {
       player.dungeon_data.set(this.name_, {});
