@@ -4,6 +4,7 @@ const Event = require('../../framework/event');
 const MonsterSchema = require('../../monsters/monster');
 const drApplesLabController = require('../controllers/dr-apples-lab');
 const forestDungeon = require('../dungeons/forest');
+const healingCenterDungeon = require('../dungeons/healing-center');
 const {monsters, monsterIds} = require('../../monsters/monsters');
 
 module.exports = new Choice({
@@ -41,6 +42,7 @@ function adventure(monsterId) {
         });
         player.state.apple = drApplesLabController.STATE.HAVE_STARTER;
         forestDungeon.unlockFor(player);
+        healingCenterDungeon.unlockFor(player);
       },
     }),
   });
