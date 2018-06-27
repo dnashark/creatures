@@ -2,14 +2,15 @@ const Int32 = require('mongoose-int32');
 const mongoose = require('mongoose');
 
 const {monsters} = require('./monsters');
+const {moves} = require('../moves/moves');
 
 const MonsterSchema = new mongoose.Schema({
   type: {type: Int32, min: 1, required: true},
   level: {type: Int32, min: 1, max: 100, required: true},
   moves: {type: [Int32], required: true},
   
-  hp: {type: Int32, required: false},
-  sp: {type: Int32, required: false},
+  hp: {type: Int32, required: false, min: 0},
+  sp: {type: Int32, required: false, min: 0},
 }, {_id: false});
 
 MonsterSchema.computeStat = computeStat;
@@ -58,6 +59,9 @@ MonsterSchema.virtual('specialDefense').get(function() { return computeStat(this
 
 MonsterSchema.virtual('maxHp').get(function() { return computeMaxHp(this.archetype.baseHealth, this.level); });
 MonsterSchema.virtual('maxSp').get(function() { return computeMaxSp(this.archetype.baseStamina, this.level); });
+
+MonsterSchema.virtual('isKOed').get(function() { return this.hp == 0; });
+MonsterSchema.virtual('isWinded').get(function() { return this.sp == 0; });
 
 function computeStat(baseStat, level) {
   return 5 + Math.floor(baseStat * level / 100);

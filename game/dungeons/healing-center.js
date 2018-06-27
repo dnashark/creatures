@@ -8,4 +8,4 @@ const MENU = new Adventure({
   choiceId: choiceRegistrar.ids.HEALING_CENTER_MENU,
 });
 
-module.exports = new Dungeon('healing-center', [MENU]);
+module.exports = new Dungeon('healing-center', false, [MENU]);

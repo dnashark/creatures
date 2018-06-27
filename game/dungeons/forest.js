@@ -15,7 +15,7 @@ const EVENT_ADVENTURE = new Adventure({
   }),
 });
 
-module.exports = new Dungeon('forest', [
+module.exports = new Dungeon('forest', true, [
   BATTLE_ADVENTURE,
   EVENT_ADVENTURE,
 ]);

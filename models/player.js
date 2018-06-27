@@ -34,6 +34,13 @@ PlayerSchema.methods.addToParty = function(monster) {
   return this.party[this.party.length - 1];
 }
 
+PlayerSchema.virtual('hasAbleMonster').get(function() {
+  for (const monster of this.party) {
+    if (!monster.isKOed && !monster.isWinded) return true;
+  }
+  return false;
+});
+
 PlayerSchema.virtual('isPartyFull').get(function() { return this.party.length == 6; });
 
 module.exports = mongoose.model('Player', PlayerSchema);
