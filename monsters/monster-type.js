@@ -13,6 +13,7 @@ module.exports = class MonsterType {
       specialAttack_: args.baseStats.specialAttack,
       specialDefense_: args.baseStats.specialDefense,
     };
+    this.moves_ = new MovesList(args.moves);
   }
 
   /** @returns {string} */
@@ -25,6 +26,40 @@ module.exports = class MonsterType {
   get baseDefense() { return this.base_.defense_; }
   get baseSpecialAttack() { return this.base_.specialAttack_; }
   get baseSpecialDefense() { return this.base_.specialDefense_; }
+
+  get movesList() { return this.moves_; }
+};
+
+class MovesList {
+  constructor(moves) {
+    this.moves_ = [];
+    for (const {level, moveId} of moves) {
+      this.moves_.push({level, moveId})
+    }
+  }
+
+  get size() { return this.moves_.length; }
+  get(index) { return Object.assign({}, this.moves_[index]); }
+  
+  filterByLevel(level) {
+    const possibleMoves = [];
+    for (const move of this.moves_) {
+      if (move.level <= level) possibleMoves.push(move.moveId);
+    }
+    return possibleMoves;
+  }
+
+  getRandomMoves(number, level) {
+    const possibleMoves = this.filterByLevel(level);
+    const randomMoves = []
+    while (possibleMoves.length && randomMoves.length < number) {
+      const index = Math.floor(Math.random() * possibleMoves.length);
+      randomMoves.push(possibleMoves[index]);
+      possibleMoves[index] = possibleMoves[possibleMoves.length - 1];
+      possibleMoves.length--;
+    }
+    return randomMoves;
+  }
 }
 
 function validateArgs(args) {
@@ -39,5 +74,9 @@ function validateArgs(args) {
       specialAttack: Number,
       specialDefense: Number,
     },
+    moves: [{
+      level: Number,
+      moveId: Number,
+    }],
   });
 }

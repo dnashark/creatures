@@ -1,4 +1,5 @@
-const MonsterType = require('../monster-type')
+const MonsterType = require('../monster-type');
+const {moveIds} = require('../../moves/moves');
 
 module.exports = new MonsterType({
   name: 'Antible',
@@ -11,4 +12,7 @@ module.exports = new MonsterType({
     specialAttack: 100,
     specialDefense: 100,
   },
+  moves: [
+    {level: 1, moveId: moveIds.WHIP},
+  ],
 });

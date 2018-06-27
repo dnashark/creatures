@@ -15,6 +15,8 @@ module.exports = class WildMonsterBattleGenerator {
         level,
       },
     };
-    player.activeBattle.enemy.initTransients();
+    const enemy = player.activeBattle.enemy;
+    enemy.initRandomMoves();
+    enemy.initTransients();
   }
 };

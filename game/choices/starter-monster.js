@@ -1,6 +1,7 @@
 const Adventure = require('../../framework/adventure');
 const Choice = require('../../framework/choice');
 const Event = require('../../framework/event');
+const MonsterSchema = require('../../monsters/monster');
 const drApplesLabController = require('../controllers/dr-apples-lab');
 const forestDungeon = require('../dungeons/forest');
 const {monsters, monsterIds} = require('../../monsters/monsters');
@@ -36,6 +37,7 @@ function adventure(monsterId) {
         player.addToParty({
           type: monsterId,
           level: 1,
+          moves: monster.movesList.getRandomMoves(MonsterSchema.getMaxMovesetSize(), 1),
         });
         player.state.apple = drApplesLabController.STATE.HAVE_STARTER;
         forestDungeon.unlockFor(player);

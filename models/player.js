@@ -27,11 +27,11 @@ const PlayerSchema = new mongoose.Schema({
 });
 
 PlayerSchema.methods.addToParty = function(monster) {
-  if (this.isPartyFull) return false;
+  if (this.isPartyFull) return null;
 
   this.party.push(monster);
   this.party[this.party.length - 1].initTransients();
-  return true;
+  return this.party[this.party.length - 1];
 }
 
 PlayerSchema.virtual('isPartyFull').get(function() { return this.party.length == 6; });

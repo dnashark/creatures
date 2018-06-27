@@ -1,4 +1,5 @@
 const contentUtil = require('../framework/content-util');
+const {moves} = require('../moves/moves');
 const template = require('../framework/template');
 
 const BATTLE_TEMPLATE = new template.StringTemplate(
@@ -14,6 +15,7 @@ const BATTLE_TEMPLATE = new template.StringTemplate(
       'Defense: ${defense}',
       'Special Attack: ${specialAttack}',
       'Special Defense: ${specialDefense}',
+      'Moves: ${moves}',
       '<form action="@{BATTLE}" method="POST"><input type="hidden" name="acknowledge" value="1"><input type="submit" value="acknowledge"></form>'
     ],
   })
@@ -42,6 +44,7 @@ function render(player) {
     defense: enemy.defense,
     specialAttack: enemy.specialAttack,
     specialDefense: enemy.specialDefense,
+    moves: enemy.moves.map(moveId => moves[moveId].name).join(', '),
   });
 }
 

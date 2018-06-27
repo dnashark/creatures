@@ -6,15 +6,24 @@ const {monsters} = require('./monsters');
 const MonsterSchema = new mongoose.Schema({
   type: {type: Int32, min: 1, required: true},
   level: {type: Int32, min: 1, max: 100, required: true},
+  moves: {type: [Int32], required: true},
   
   hp: {type: Int32, required: false},
   sp: {type: Int32, required: false},
 }, {_id: false});
 
-MonsterSchema.statics.computeStat = computeStat;
-MonsterSchema.statics.computeMaxHp = computeMaxHp;
-MonsterSchema.statics.computeMaxSp = computeMaxSp;
+MonsterSchema.computeStat = computeStat;
+MonsterSchema.computeMaxHp = computeMaxHp;
+MonsterSchema.computeMaxSp = computeMaxSp;
+MonsterSchema.getMaxMovesetSize = () => 6;
 
+MonsterSchema.methods.initRandomMoves = function() {
+  const moves = this.archetype.movesList.getRandomMoves(MonsterSchema.getMaxMovesetSize(), this.level);
+  this.moves.length = 0;
+  for (const move of moves) {
+    this.moves.push(move);
+  }
+};
 MonsterSchema.methods.initTransients = function() {
   this.hp = this.maxHp;
   this.sp = this.maxSp;
@@ -23,6 +32,17 @@ MonsterSchema.methods.clearTransients = function() {
   this.hp = null;
   this.sp = null;
 };
+MonsterSchema.methods.learnMove = function(moveId) {
+  if (this.moves.length < MonsterSchema.maxMovesetSize) {
+    this.moves.push(moveId);
+    return true;
+  } else {
+    return false;
+  }
+}
+MonsterSchema.methods.replaceMove = function(index, moveId) {
+  this.moves.set(index, moveId);
+}
 
 MonsterSchema.virtual('archetype').get(function() { return monsters[this.type]; });
 
