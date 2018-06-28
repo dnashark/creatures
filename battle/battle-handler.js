@@ -30,18 +30,21 @@ async function handler(req) {
     }
   }
   
+  let logContent = '';
   if (playerCommand) {
-    const result = battleServer.handler(req.player, playerCommand);
+    const log = [];
+    const result = battleServer.handler(req.player, playerCommand, log);
+    logContent = log.map(line => '<p>' + line + '</p>').join('');
     if (result == battleServer.Result.WIN) {
       req.player.activeBattle = null;
-      return BATTLE_OVER_TEMPLATE.apply({result: 'won'});
+      return logContent + BATTLE_OVER_TEMPLATE.apply({result: 'won'});
     } else if (result == battleServer.Result.LOSS) {
       req.player.activeBattle = null;
-      return BATTLE_OVER_TEMPLATE.apply({result: 'lost'});
+      return logContent + BATTLE_OVER_TEMPLATE.apply({result: 'lost'});
     }
   }
 
-  return render(req.player);
+  return logContent + render(req.player);
 }
 
 module.exports = {

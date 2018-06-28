@@ -13,7 +13,7 @@ const Result = {
   LOSS: 2,
 }
 
-function handler(player, playerCommand) {
+function handler(player, playerCommand, log) {
   const playerMonster = player.party[0];
   const enemyMonster = player.activeBattle.enemy;
   const enemyCommand = pickEnemyCommand(enemyMonster);
@@ -23,12 +23,13 @@ function handler(player, playerCommand) {
     {monster: enemyMonster, command: enemyCommand, side: Side.ENEMY}
   );
 
-  performAction(orderedActions[0].monster, orderedActions[0].command, orderedActions[1].monster);
+  let subject = orderedActions[0]
+  performAction(orderedActions[0], orderedActions[1],  log);
   if (orderedActions[1].monster.isKOed) {
     return orderedActions[0].side == Side.PLAYER ? Result.WIN : Result.LOSS;
   }
 
-  performAction(orderedActions[1].monster, orderedActions[1].command, orderedActions[0].monster);
+  performAction(orderedActions[1], orderedActions[0], log);
   if (orderedActions[0].monster.isKOed) {
     return orderedActions[1].side == Side.PLAYER ? Result.WIN : Result.LOSS;
   }
@@ -50,24 +51,38 @@ function decideActionOrder(side1, side2) {
   }
 }
 
-function performAction(subject, command, target) {
-  if (command.isMove) {
-    performMove(subject, moves[subject.moves[command.index]], target);
+function performAction(subject, target, log) {
+  if (subject.command.isMove) {
+    performMove(subject, moves[subject.monster.moves[subject.command.index]], target, log);
   } else {
     throw new Error('unimplemented command type');
   }
 }
 
-function performMove(subject, move, target) {
+function performMove(subject, move, target, log) {
+  log.push(constructMonsterIdentifier(subject, true) + ' uses ' + move.name + '.');
   if (move.accuracy && random.integer(1, 100) > move.accuracy) {
-    // The move missed.
+    log.push('The attack missed.');
     return;
   }
+  
+  const attack = move.isSpecial ? subject.monster.specialAttack : subject.monster.attack;
+  const defense = move.isSpecial ? target.monster.specialDefense : subject.monster.defense;
+  const damage = Math.ceil(calculateBaseDamage(move.power, attack, defense, subject.monster.level));
 
-  const attack = move.isSpecial ? subject.specialAttack : subject.attack;
-  const defense = move.isSpecial ? target.specialDefense : subject.defense;
-  const damage = Math.ceil(calculateBaseDamage(move.power, attack, defense, subject.level));
-  target.hp = Math.max(0, target.hp - damage);
+  log.push(constructMonsterIdentifier(target, true) + ' takes ' + damage + ' points of damage.');
+  target.monster.hp = Math.max(0, target.monster.hp - damage);
+  if (target.monster.isKOed) {
+    log.push(constructMonsterIdentifier(target, true) + ' is knocked out.');
+  }
+}
+
+function constructMonsterIdentifier(descriptor, capitalizeFirst) {
+  if (capitalizeFirst) {
+    return (descriptor.side == Side.PLAYER ? 'Your ' : 'Opponent ') + descriptor.monster.name;
+  } else {
+    return (descriptor.side == Side.PLAYER ? 'your ' : 'opponent ') + descriptor.monster.name;
+  }
 }
 
 function calculateBaseDamage(power, attack, defense, level) {
